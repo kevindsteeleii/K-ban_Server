@@ -14,6 +14,7 @@ flask-cors = "*"
 marshmallow-sqlalchemy = "*"
 flask-bcrypt = "*"
 bcrypt = "*"
+datetime = "*"
 
 [requires]
 python_version = "3.6"

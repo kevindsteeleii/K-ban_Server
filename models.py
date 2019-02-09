@@ -1,4 +1,5 @@
 from app import db, ma, bcrypt
+from datetime import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,6 +47,16 @@ class Task(db.Model):
         self.content = content
         self.board_id = board_id
 
+class CheckList(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    list_item = db.Column(db.String(100))
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
+
+    def __init__(self, list_item, task_id):
+        self.list_item = list_item
+        self.task_id = task_id
+
 class UserSchema(ma.Schema):
     class Meta: 
         fields = ('id', 'username', 'email')
@@ -66,3 +77,10 @@ class TaskSchema(ma.Schema):
 
 task_schema = TaskSchema(strict=True)
 tasks_schema = TaskSchema(many=True, strict=True)
+
+class CheckListSchema(ma.Schema):
+    class Meta:
+        fields = ('id','date_created', 'list_item', 'task_id')
+
+checklist_schema = CheckListSchema(strict=True)
+checklists_schema = CheckListSchema( many=True, strict=True)
