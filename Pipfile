@@ -12,6 +12,8 @@ flask-marshmallow = "*"
 flask-modus = "*"
 flask-cors = "*"
 marshmallow-sqlalchemy = "*"
+flask-bcrypt = "*"
+bcrypt = "*"
 
 [requires]
 python_version = "3.6"

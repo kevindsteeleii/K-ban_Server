@@ -1,5 +1,5 @@
 from flask import request, Blueprint, jsonify
-from app import db
+from app import db, bcrypt
 from models import User, user_schema, users_schema, Board, boards_schema
 
 users_blueprint = Blueprint(

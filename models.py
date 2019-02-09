@@ -1,16 +1,20 @@
-from app import db, ma
+from app import db, ma, bcrypt
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30))
-    email = db.Column(db.String(30))
+    username = db.Column(db.String(30), unique=True)
+    email = db.Column(db.String(30), unique=True)
     password = db.Column(db.String(80))
-
+ 
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
         # will salt and hash later
-        self.password = password
+        self.password = bcrypt.generate_password_hash(password).decode()
+    
+    def verify_login(self, attempted_password):
+        attempted_password = attempted_password.encode()
+        return bcrypt.check_password_hash(self.password, attempted_password)
 
 class Board(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,6 +23,8 @@ class Board(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship(
         'User',
+        single_parent=True,
+        cascade="all, delete-orphan",
         backref=db.backref('boards', lazy='dynamic')
     )
     def __init__(self, name, user_id):
@@ -31,6 +37,8 @@ class Task(db.Model):
     board_id = db.Column(db.Integer, db.ForeignKey('board.id'))
     board = db.relationship(
         'Board',
+        single_parent=True,
+        cascade="all, delete-orphan",
         backref=db.backref('tasks', lazy='dynamic')
     )
 
@@ -46,7 +54,7 @@ user_schema = UserSchema(strict=True)
 users_schema = UserSchema(many=True, strict=True)
 
 class BoardSchema(ma.Schema):
-    class Meta:
+    class Meta: 
         fields = ('id', 'name', 'user_id')
 
 board_schema = BoardSchema(strict=True)
